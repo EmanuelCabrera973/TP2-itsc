@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, Login, Logout
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from .forms import CustomUserCreationForm
-from django,contrib import messages
+from django.contrib import messages
 
 def register(request):
     if request.method == 'POST':
@@ -32,5 +32,5 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('lista_persona')
-    
+
 # Create your views here.
