@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h2>Lista de Personas</h2>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{% url 'nueva_persona' %}" class="btn btn-success">Nueva Persona</a>
+        <a href="{% url 'carga_masiva_personas' %}" class="btn btn-info">Carga Masiva</a>
+    </div>
+</div>
+
+<table class="table table-striped mt-3">
+    <thead>
+        <tr>
+            <th>Apellido</th>
+            <th>Nombre</th>
+            <th>Edad</th>
+            <th>Oficina</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for persona in page_obj %}
+        <tr>
+            <td>{{ persona.apellido }}</td>
+            <td>{{ persona.nombre }}</td>
+            <td>{{ persona.edad }}</td>
+            <td>{{ persona.oficina.nombre_corto }}</td>
+            <td>
+                <a href="{% url 'detalle_persona' persona.id %}" class="btn btn-primary btn-sm">Ver</a>
+                <a href="{% url 'editar_persona' persona.id %}" class="btn btn-warning btn-sm">Modificar</a>
+                <a href="{% url 'eliminar_persona' persona.id %}" class="btn btn-danger btn-sm">Eliminar</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5" class="text-center">No hay personas registradas</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Paginación -->
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+        </li>
+        {% endif %}
+        
+        <li class="page-item disabled">
+            <span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+        </li>
+        
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Siguiente</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endblock %}
