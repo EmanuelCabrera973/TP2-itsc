@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Buscar Pipol</h2>
+
+<form method="get" class="mb-3">
+    <div class="input-group">
+        <input type="text" name="q" class="form-control" placeholder="Buscar por nombre o apellido..." value="{{ query }}">
+        <button type="submit" class="btn btn-primary">Buscar</button>
+    </div>
+</form>
+
+{% if query %}
+<p>Resultados para: <strong>"{{ query }}"</strong></p>
+{% endif %}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Apellido</th>
+            <th>Nombre</th>
+            <th>Edad</th>
+            <th>Oficina</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for persona in page_obj %}
+        <tr>
+            <td>{{ persona.apellido }}</td>
+            <td>{{ persona.nombre }}</td>
+            <td>{{ persona.edad }}</td>
+            <td>{{ persona.oficina.nombre_corto }}</td>
+            <td>
+                <a href="{% url 'detalle_persona' persona.id %}" class="btn btn-primary btn-sm">Ver</a>
+                <a href="{% url 'editar_persona' persona.id %}" class="btn btn-warning btn-sm">Modificar</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5" class="text-center">No se encontraron personas</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Paginación -->
+{% endblock %}
