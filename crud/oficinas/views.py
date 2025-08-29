@@ -3,6 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from .models import Oficina
 from .forms import OficinaForm
+import csv
+from django.contrib import messages
 
 def lista_oficinas(request):
     oficinas_list = Oficina.objects.all().order_by('nombre')
@@ -57,7 +59,7 @@ def eliminar_oficina(request, id):
     
     return render(request, 'oficinas/eliminar_oficina.html', {'oficina': oficina})
 
-def buscar_oficinas(request):
+def buscar_oficina(request):
     query = request.GET.get('q', '')
     if query:
         oficinas = Oficina.objects.filter(nombre__icontains=query)
@@ -68,20 +70,59 @@ def buscar_oficinas(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     
-    return render(request, 'oficinas/buscar_oficinas.html', {
+    return render(request, 'oficinas/buscar_oficina.html', {
         'page_obj': page_obj,
         'query': query
     })
 
+
+
 @login_required
-def carga_masiva_oficinas(request):
+def carga_masiva(request):
     if request.method == 'POST' and request.FILES['archivo']:
         archivo = request.FILES['archivo']
-        # Implementar lógica de carga masiva aquí
-        # Por ahora solo un mensaje
-        return render(request, 'oficinas/carga_masiva_oficinas.html', {
-            'mensaje': 'Carga masiva implementada parcialmente'
-        })
+        
+        try:
+            # Leer el archivo CSV
+            decoded_file = archivo.read().decode('utf-8').splitlines()
+            reader = csv.DictReader(decoded_file)
+            
+            oficinas_creadas = 0
+            errores = []
+            
+            for row_num, row in enumerate(reader, start=2):  # start=2 porque la primera línea es el encabezado
+                try:
+                    nombre = row['nombre'].strip()
+                    nombre_corto = row['nombre_corto'].strip()
+                    
+                    # Validar que los campos no estén vacíos
+                    if not nombre or not nombre_corto:
+                        errores.append(f"Línea {row_num}: Campos vacíos")
+                        continue
+                    
+                    # Crear la oficina
+                    Oficina.objects.create(
+                        nombre=nombre,
+                        nombre_corto=nombre_corto
+                    )
+                    oficinas_creadas += 1
+                    
+                except KeyError as e:
+                    errores.append(f"Línea {row_num}: Falta columna {e}")
+                except Exception as e:
+                    errores.append(f"Línea {row_num}: {str(e)}")
+            
+            # Mostrar resultados
+            if errores:
+                messages.warning(request, f'Se crearon {oficinas_creadas} oficinas, pero hubo {len(errores)} errores.')
+            else:
+                messages.success(request, f'¡Éxito! Se crearon {oficinas_creadas} oficinas.')
+                
+            return redirect('lista_oficinas')
+            
+        except Exception as e:
+            messages.error(request, f'Error al procesar el archivo: {str(e)}')
+            return redirect('carga_masiva_oficinas')
     
     return render(request, 'oficinas/carga_masiva_oficinas.html')
 

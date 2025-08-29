@@ -1,5 +1,5 @@
 from django.db import models
-from oficina.models import Oficina
+from oficinas.models import Oficina
 
 class Persona(models.Model):
     nombre = models.CharField(max_length=100)
