@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Buscar Oficinas</h2>
+
+<form method="get" class="mb-3">
+    <div class="input-group">
+        <input type="text" name="q" class="form-control" placeholder="Buscar oficinas..." value="{{ query }}">
+        <button type="submit" class="btn btn-primary">Buscar</button>
+    </div>
+</form>
+
+{% if query %}
+<p>Resultados para: <strong>"{{ query }}"</strong></p>
+{% endif %}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Nombre Corto</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for oficina in page_obj %}
+        <tr>
+            <td>{{ oficina.nombre }}</td>
+            <td>{{ oficina.nombre_corto }}</td>
+            <td>
+                <a href="{% url 'detalle_oficina' oficina.id %}" class="btn btn-primary btn-sm">Ver</a>
+                <a href="{% url 'editar_oficina' oficina.id %}" class="btn btn-warning btn-sm">Modificar</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3" class="text-center">No se encontraron oficinas</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Paginación (igual que en lista_oficinas.html) -->
+{% endblock %}

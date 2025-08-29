@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h2>Detalle de Oficina: {{ oficina.nombre }}</h2>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{% url 'editar_oficina' oficina.id %}" class="btn btn-warning">Editar</a>
+        <a href="{% url 'eliminar_oficina' oficina.id %}" class="btn btn-danger">Eliminar</a>
+        <a href="{% url 'lista_oficinas' %}" class="btn btn-secondary">Volver</a>
+    </div>
+</div>
+
+<div class="card mt-3">
+    <div class="card-body">
+        <h5 class="card-title">Información de la Oficina</h5>
+        <p><strong>Nombre completo:</strong> {{ oficina.nombre }}</p>
+        <p><strong>Nombre corto:</strong> {{ oficina.nombre_corto }}</p>
+    </div>
+</div>
+
+<div class="card mt-3">
+    <div class="card-body">
+        <h5 class="card-title">Personas en esta oficina ({{ personas.count }})</h5>
+        {% if personas %}
+        <ul class="list-group">
+            {% for persona in personas %}
+            <li class="list-group-item">
+                {{ persona.apellido }}, {{ persona.nombre }} - {{ persona.edad }} años
+                <a href="{% url 'detalle_persona' persona.id %}" class="btn btn-sm btn-primary float-end">Ver</a>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="text-muted">No hay personas en esta oficina</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
